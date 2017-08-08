@@ -1,0 +1,45 @@
+//
+// Spell Right global configuration file.
+//
+{
+    "terminal.integrated.shell.windows": "C:\\Users\\mel\\Anaconda3\\Scripts\\xonsh.exe",
+    "terminal.integrated.shellArgs.windows": [
+        "-DVCODE=1"
+    ],
+    "window.zoomLevel": 0,
+    "sync.gist": "d13e4e52976dd64dc8629afd8249cd6a",
+    "sync.lastUpload": "",
+    "sync.autoDownload": false,
+    "sync.autoUpload": false,
+    "sync.lastDownload": "2017-04-17T06:30:25.078Z",
+    "sync.forceDownload": false,
+    "sync.anonymousGist": false,
+    "sync.host": "",
+    "sync.pathPrefix": "",
+    "workbench.iconTheme": "vscode-icons",
+    "sync.quietSync": false,
+    "spellright.ignoreWords": [
+        "iterable"
+    ],
+
+
+    "python.linting.lintOnSave": true, 
+    "python.linting.lintOnTextChange": false,
+
+    "python.linting.pydocstyleEnabled": false,
+
+
+    "python.linting.enabled": true,
+
+    "python.linting.pylintEnabled": false,
+
+
+    // Whether to lint Python files using flake8
+    "python.linting.flake8Enabled": true,
+
+    "python.formatting.provider": "autopep8"
+
+
+
+
+}
