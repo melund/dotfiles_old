@@ -1,0 +1,19 @@
+[user]
+	name = Morten Enemark Lund
+	signingkey = ""
+[user]
+	email = melund@gmail.com
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+[credential]
+	helper = manager
+[core]
+	pager = less -R
+	editor = code --wait
+[diff]
+    tool = default-difftool
+[difftool "default-difftool"]
+    cmd = code --wait --diff $LOCAL $REMOTE
