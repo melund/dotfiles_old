@@ -1,0 +1,148 @@
+Settings = 
+  {
+    Camera = 
+      {
+        BackgroundColor = {0.9, 0.9, 0.94};
+        AntiAlias = 4;
+      };
+    Environment = 
+      {
+        Sort_model_trees = Off;
+      };
+    AnyBody_Assistant = 
+      {
+        Open_on_system_start = On;
+      };
+    Output_View = 
+      {
+        Floating_number_style = 
+          {
+            Digits = 7;
+          };
+      };
+    Editor = 
+      {
+        Class_template_inserter = 
+          {
+            Floating_number_style = 
+              {
+                Digits = 15;
+              };
+          };
+      };
+    Workspace = 
+      {
+        Promt_to_save_new_workspace_on_exit = On;
+        Floating_number_style = 
+          {
+            Digits = 7;
+          };
+      };
+    Model_Browser = 
+      {
+        Floating_number_style = 
+          {
+            Digits = 12;
+          };
+      };
+    GUI_Properties_View = 
+      {
+        Floating_number_style = 
+          {
+            Digits = 12;
+          };
+      };
+    Chart = 
+      {
+        ShortenTitleOnOff = On;
+        Axis_Unit = 
+          {
+            Visible = On;
+            AutoUnit = On;
+            AutoScale = On;
+            Divisions = 5;
+            Unit = 0.2;
+            TickInside = 0.0;
+            TickOutside = 0.025;
+            GridLines = Off;
+            GridLineStyle = 
+              {
+                Style = Line3DStyleFull;
+                Thickness = 1.0;
+                RGB = {0.25, 0.25, 0.25};
+              };
+            Text = On;
+            TextFont = 
+              {
+                RGB = {0.0, 0.0, 0.0};
+                FontName = "Microsoft Sans Serif";
+                Height = 20;
+                Width = 8;
+                Bold = Off;
+                Italic = Off;
+                BillBoardView = On;
+                ModelSized = On;
+                ModelScaleHeight = 1.0;
+                ModelScaleWidth = 1.0;
+              };
+            TextSpace = 0.09;
+            NumberFormat = 
+              {
+                Digits = 0;
+                Style = 0;
+                Scale = Off;
+                ScaleVal = 1.0;
+              };
+          };
+        AbsAxis = 
+          {
+            Margin = 0.05;
+          };
+        AbsAxis2 = 
+          {
+            Margin = 0.05;
+          };
+        ValueAxis = 
+          {
+            Margin = 0.05;
+          };
+        Data_View = 
+          {
+            Floating_number_style = 
+              {
+                Digits = 7;
+              };
+          };
+        Chart_View = 
+          {
+            AntiAlias = 4;
+            BackgroundColor = {1.0, 1.0, 1.0};
+          };
+      };
+    Find_In_Files_Dialog = 
+      {
+        MatchCase = Off;
+        MatchWholeWorld = Off;
+        LookIn = 0;
+        FindWhat = 
+          {
+            ""
+          };
+      };
+    File_Dialog = 
+      {
+        FilesOfTypeIndex = 0;
+        CurrentScriptFilesPath = {"C:\Users\mel\Documents\GitHub\pygments-anyscript", "", "", ""};
+      };
+    Templates = 
+      {
+        Last_user_template_folder = "";
+        Last_user_template_target = "";
+      };
+    Model_View = 
+      {
+        BackgroundColor = {0.9, 0.9, 0.94};
+        AntiAlias = 4;
+        Maximum_Modelview_render_time_fraction = 0.1;
+      };
+  };

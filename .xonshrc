@@ -15,10 +15,12 @@ from os.path import basename
 $LS_COLORS='rs=0:di=01;36:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:'
 
 
+#xontrib load free_cwd
+#xontrib load mpl
 
 $SUPPRESS_BRANCH_TIMEOUT_MESSAGE = True
-$WIN_UNICODE_CONSOLE = False
-$UPDATE_COMPLETIONS_ON_KEYPRES = True
+#$WIN_UNICODE_CONSOLE = True
+#$UPDATE_COMPLETIONS_ON_KEYPRES = True
 $AUTO_PUSHD = True
 
 $XONSH_HISTORY_SIZE = (10000, 'commands')
@@ -54,6 +56,8 @@ aliases['cdgit'] = ['cd', '~/Documents/github/' ]
 aliases['cd..'] = ['cd', '..' ]
 aliases['cdd'] = ['cd', '~/Documents']
 aliases['cdx'] = ['cd', '~/Documents/xonsh']
+aliases['xrc'] = ['code', '~/.xonshrc']
+
 
 aliases['g'] = 'git status -sb'
 aliases['gco'] = 'git checkout'
@@ -81,7 +85,7 @@ from functools import wraps
 from xonsh.contexts import Functor
 
 class CreateAlias(Functor):
-    
+
     def __init__(self, alias_name, args=(), kwargs=None):
         super().__init__(args=args, kwargs=kwargs, rtn='')
         if self.kwargs is None:
@@ -109,7 +113,7 @@ with! CreateAlias('sha1', args=['args']):
         sha.update(f.read())
     print(sha.hexdigest())
 
-    
+
 
 def show_style(stylename='default'):
     from xonsh.tools import print_color
@@ -121,8 +125,7 @@ def show_style(stylename='default'):
     $XONSH_COLOR_STYLE  = oldstyle
 
 def _sha(args, stdin=None):
-    desc = "Calc hash sum of file"
-    parser = argparse.ArgumentParser('sha', description=desc)
+    parser = argparse.ArgumentParser('sha', description="Calc hash sum of file")
     parser.add_argument('file', nargs='?', help='File to be hashed')
     parser.add_argument('-a', '--algorithm', default='sha256', help='The hash algorithm used')
     ns = parser.parse_args(args)
@@ -130,25 +133,26 @@ def _sha(args, stdin=None):
     try:
         sha_algo = getattr(hashlib, ns.algorithm)()
     except AttributeError:
-        print(ns.algorithm + ' is not available. Please chose one the following:')
-        print(hashlib.algorithms_available)
+        print(f'No such algorithm. Chose from:\n{hashlib.algorithms_available}')
         return
     with open(args[0], 'rb') as f:
         sha_algo.update(f.read())
     val = sha_algo.hexdigest()
     $(echo.exe -n @(val.strip()) | clip)
-    print('{} *{} ({})'.format(val, ns.file, ns.algorithm))
+    print(f'{val} *{ns.file} ({ns.algorithm})')
 
 aliases['sha'] = locals().pop('_sha')
-    
-   
+
+
 
 def _devmode(args, stdin=None):
     if len(args) == 1 and args[0] == 'off':
         try:
-           $PROMPT, $TITLE, $RIGHT_PROMPT = (
-               $_ORG_PROMPT,$_ORG_TITLE,$_ORG_RIGHT_PROMPT)
-           cls
+            $PROMPT, $TITLE, $RIGHT_PROMPT = (
+                $_ORG_PROMPT,$_ORG_TITLE,$_ORG_RIGHT_PROMPT)
+            clear
+            $XONSH_SHOW_TRACEBACK = True
+            #$INTENSIFY_COLORS_ON_WIN = False
         except:
           pass
     else:
@@ -159,21 +163,25 @@ def _devmode(args, stdin=None):
                    '{BOLD_BLUE}\n{prompt_end}{NO_COLOR} ')
         $TITLE = '{current_job:{} | }snail@sea: {cwd} | xonsh'
         $RIGHT_PROMPT = ''
+        $XONSH_SHOW_TRACEBACK = False
+        #$INTENSIFY_COLORS_ON_WIN = False
         #$DYNAMIC_CWD_WIDTH = inf
         #cls
 
 aliases['devmode'] = _devmode
 del _devmode
 
+devmode on
 
-$PROMPT_FIELDS['prompt_end'] = lambda : '{RED}$' if __xonsh_history__.last_cmd_rtn else '{BLUE}$'
+
+#$PROMPT_FIELDS['prompt_end'] = lambda : '{BOLD_RED}$' if __xonsh_history__.last_cmd_rtn else '{BOLD_BLUE}$'
 
 
 #####################
 # UTILITY FUNCTIONS #
 #####################
 
-def _gif_encode(args, stdin=None):  
+def _gif_encode(args, stdin=None):
     desc = "Encode a video as an animated gif file"
     parser = argparse.ArgumentParser('gif-encode', description=desc)
     parser.add_argument('infile', help='The movie to convert to gif')
@@ -201,7 +209,7 @@ def _gif_encode(args, stdin=None):
         ![ffmpeg.exe -v warning -i @(ns.infile) -vf @(filters+',palettegen=stats_mode=diff') -y @(palette)]
         ![ffmpeg.exe -v warning -i @(ns.infile) -i @(palette) -lavfi @(filters+' [x]; [x][1:v] paletteuse') -y @( ns.outfile)]
 
- 
+
 aliases['gif-encode'] = _gif_encode
 del _gif_encode
 
@@ -214,7 +222,7 @@ def _anyscript2python(args, stdin=None):
     out.pop('WARNING',None)
     out.pop('ERROR',None)
     gc.update(out)
-        
+
 aliases['any2py'] = _anyscript2python
 del _anyscript2python
 
@@ -227,23 +235,12 @@ def _pytho2anyscript(args, stdin=None):
         print(array2anyscript(var))
     else:
         print(args[0] + ' could not be found')
-    
-        
+
+
 aliases['py2any'] = _pytho2anyscript
 del _pytho2anyscript
 
 
-
-$XONSH_SHOW_TRACEBACK = False
-$PROMPT = $PROMPT.replace('INTENSE_','').replace('CYAN','BLUE')
-$INTENSIFY_COLORS_ON_WIN = False
-
-
-#$COMPLETIONS_DISPLAY = 'single'
-#$COMPLETIONS_MENU_ROWS = 5
-
-#if 'VSCODE_PID' in ${...}:
-#    $PROMPT = '{env_name:{} }{BLUE}{cwd}{branch_color}{curr_branch: @{}} {BOLD_BLUE}\n{prompt_end}{NO_COLOR} '
 
 def _light_theme():
     cmd /c color f8
@@ -256,9 +253,6 @@ def _dark_theme():
 
 aliases['dt'] = _dark_theme
 del _dark_theme
-
-devmode
-
 
 
 def _docx2rst(args, stdin=None):
@@ -301,7 +295,7 @@ aliases['docx2rst'] = locals().pop('_docx2rst')
 
 
 def _fix_docx_issues(args, stdin=None):
-    """ This fixes docx issues with word by 
+    """ This fixes docx issues with word by
         first saving them as strict docx format,
         and then back as docx
     """
@@ -315,7 +309,7 @@ def _fix_docx_issues(args, stdin=None):
     try:
         for fn in filenames:
             # Save documents as stric xml to rectify any problems
-            try: 
+            try:
                 mydoc = msword.Documents.Open(fn)
                 mydoc.SaveAs2(FileName=fn,
                    FileFormat=win32com.client.constants.wdFormatStrictOpenXMLDocument,
@@ -324,7 +318,7 @@ def _fix_docx_issues(args, stdin=None):
                 mydoc.Close()
         for fn in filenames:
             # Then save again as normal docx
-            try: 
+            try:
                 mydoc = msword.Documents.Open(fn)
                 mydoc.SaveAs2(FileName=fn,
                    FileFormat=win32com.client.constants.wdFormatDocumentDefault,
@@ -332,20 +326,61 @@ def _fix_docx_issues(args, stdin=None):
                 print('Converted: '+fn)
             finally:
                 mydoc.Close()
-                
+
     finally:
-        msword.Quit() 
+        msword.Quit()
         pythoncom.CoUninitialize()
 
 aliases['fix_docx_issues'] = locals().pop('_fix_docx_issues')
 
 
 
+def _fix_video(args, stdin=None):
+    desc = "Make video compatible"
+    parser = argparse.ArgumentParser('fix-video', description=desc)
+    parser.add_argument('file', help='The video to preocess')
+    ns = parser.parse_args(args)
+    fn, ext = os.path.splitext(ns.file)
+    outfile = fn + '_converted' + ext
+
+    ![ffmpeg -i @(ns.file)  -c:v libx264 -crf 10 -profile:v baseline -level 3.0 -pix_fmt yuv420p -c:a aac -ac 2 -strict experimental -b:a 128k -movflags faststart @(outfile) ]
+
+aliases['fix-video'] = locals().pop('_fix_video')
 
 
 
-## XDOT setup.
+
+def _any_parse(args, name = None, stdin=None):
+    from ast import literal_eval
+    import numpy
+    if isinstance(args, list):
+        s = args[0]
+    else:
+        s = args
+    var,_,val = s.partition('=')
+    if name is None:
+        name = var.rpartition('.')[-1].strip()
+    val = val.replace('{','[').replace('}',']').replace(';','')
+    val = val.replace('\n','').replace(' ','')
+    val = literal_eval(val)
+    val = numpy.array(val)
+    basename = name
+    cnt = 1
+    while name in __xonsh_ctx__:
+        name = f'{basename}_{str(cnt)}'
+        cnt += 1
+    print(f'Added {name} {str(val.shape)} to workspace')
+    __xonsh_ctx__[name] = val
+
+#aliases['any'] = locals().pop('_anyscript_import')
+aliases['any'] = _any_parse
+
+
+
+## Dotfiles setup.
+# git init --bare ~/.dotfiles
+# dot config --local status.showUntrackedFiles no
 #
+# TODO: Setup on a new computer.
 #
-#
-aliases['xdot']='git --git-dir=~/.xdot/ --work-tree=~'
+aliases['dot']='git --git-dir=~/.dotfiles/ --work-tree=~'
