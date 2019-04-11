@@ -379,8 +379,11 @@ aliases['any'] = _any_parse
 
 ## Dotfiles setup.
 # git init --bare ~/.dotfiles
-# dot config --local status.showUntrackedFiles no
+# git --git-dir=~/.dotfiles/ --work-tree=~ config --local status.showUntrackedFiles no
+#
 #
 # TODO: Setup on a new computer.
-#
+# git --git-dir=~/.dotfiles/ --work-tree=~ config fetch origin
+# git --git-dir=~/.dotfiles/ --work-tree=~ config reset --hard origin/master
+
 aliases['dot']='git --git-dir=~/.dotfiles/ --work-tree=~'
