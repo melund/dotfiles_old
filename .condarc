@@ -1,5 +1,3 @@
 channels:
-  - anaconda
   - conda-forge
-  - melund
-ssl_verify: true
+  - defaults

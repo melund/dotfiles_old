@@ -1,5 +1,10 @@
 # -*-mode: python; flycheck-mode: nil -*-
 
+import warnings
+warnings.filterwarnings("ignore",category=DeprecationWarning)
+from xonsh.tools import unthreadable, uncapturable
+
+
 import builtins
 import argparse
 import os
@@ -17,6 +22,8 @@ $LS_COLORS='rs=0:di=01;36:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:
 
 #xontrib load free_cwd
 #xontrib load mpl
+xontrib load coreutils
+
 
 $SUPPRESS_BRANCH_TIMEOUT_MESSAGE = True
 #$WIN_UNICODE_CONSOLE = True
@@ -25,6 +32,7 @@ $AUTO_PUSHD = True
 
 $XONSH_HISTORY_SIZE = (10000, 'commands')
 $XONSH_HISTORY_BACKEND = 'sqlite'
+#$XONSH_HISTORY_BACKEND = 'json'
 #$HISTCONTROL = 'ignoredups'
 
 
@@ -33,16 +41,16 @@ $XONSH_HISTORY_BACKEND = 'sqlite'
 ###########
 
 
-aliases['rm'] = 'rm -i'
-aliases['cp'] = 'cp -i'
-aliases['mv'] = 'mv -i'
+#aliases['rm'] = 'rm -i'
+#aliases['cp'] = 'cp -i'
+#aliases['mv'] = 'mv -i'
 
-aliases['grep'] = 'grep -i --color=always'
-aliases['mkdir'] = 'mkdir -p'
+#aliases['grep'] = 'grep -i --color=always'
+#aliases['mkdir'] = 'mkdir -p'
 # aliases['cdpwd'] = 'cd `pwd`'
 aliases['d'] = ['cmd', '/c', 'dir']
-aliases['npp'] = ['C:/Program Files (x86)/Notepad++/notepad++.exe',  '-multiInst','-nosession']
-aliases['ls'] = ['ls','--show-control-chars', '-C', '--color=auto', '-X']
+#aliases['npp'] = ['C:/Program Files (x86)/Notepad++/notepad++.exe',  '-multiInst','-nosession']
+aliases['ls'] = ['ls.exe','--show-control-chars', '-C', '--color=auto', '-X']
 
 
 aliases['ll'] = ['ls', '-lh', '-F', '--color=auto', '-vX']
@@ -75,6 +83,13 @@ aliases['last'] = ['git', 'log', '--pretty=format:"%C(yellow)%h%x09%Creset%an%x0
 aliases['graph'] = "git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --all"
 aliases['graph2'] = "git log --graph --all --format=format:'%C(bold yellow)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n'' %C(white)%s%C(reset) %C(bold white)- %an%C(reset)' --abbrev-commit"
 
+@uncapturable
+@unthreadable
+def _ssh_forum():
+    ssh -i ~/.ssh/discourse_rsa discourse@anyscriptforum.northeurope.cloudapp.azure.com
+
+aliases['ssh-forum'] = _ssh_forum
+del _ssh_forum
 
 # THINGS I TEST
 #$FORCE_POSIX_PATHS = True  # Fixes this bug cd 'New Folder/'
@@ -120,8 +135,14 @@ def show_style(stylename='default'):
     from xonsh.xonfig import _tok_colors
 
     oldstyle, $XONSH_COLOR_STYLE = $XONSH_COLOR_STYLE, stylename
-    s =  builtins.__xonsh_shell__.shell.styler._smap
-    print_color(_tok_colors(s,100))
+    s =  builtins.__xonsh_shell__.shell.styler.styles
+    tok_list = _tok_colors(s,100)
+    tok_list = [
+        (t, text.strip()+' '+s[t]+'\n')
+        for t, text in tok_list
+        if 'noinherit' not in s[t]
+    ]
+    print_color(tok_list, end='\n')
     $XONSH_COLOR_STYLE  = oldstyle
 
 def _sha(args, stdin=None):
@@ -158,7 +179,7 @@ def _devmode(args, stdin=None):
     else:
         $_ORG_PROMPT,$_ORG_TITLE,$_ORG_RIGHT_PROMPT = (
              $PROMPT, $TITLE, $RIGHT_PROMPT)
-        $PROMPT = ('{env_name:{} }{BOLD_GREEN}snail@sea'
+        $PROMPT = ('{env_name:{}}{BOLD_GREEN}snail@sea'
                    '{BOLD_BLUE} {cwd}{branch_color}{curr_branch: {}} '
                    '{BOLD_BLUE}\n{prompt_end}{NO_COLOR} ')
         $TITLE = '{current_job:{} | }snail@sea: {cwd} | xonsh'
@@ -270,7 +291,7 @@ def _docx2rst(args, stdin=None):
     with open(rstfile, encoding='utf-8') as file:
         filedata = file.read()
     filedata = filedata.replace('_static/'+fn+'/media', '_static/'+fn)
-    filedata = re.sub('^\|\s', ' ' , filedata, flags=re.MULTILINE)
+    filedata = re.sub(r'^\|\s', ' ' , filedata, flags=re.MULTILINE)
     indent = False
     lines = []
     for line in filedata.splitlines():
@@ -281,10 +302,10 @@ def _docx2rst(args, stdin=None):
         line = ' '*4 + line if indent else line
         lines.append(line)
     filedata = "\n".join(lines)
-    filedata = re.sub('^\s*<ANYSCRIPT>.?$', '\n.. code-block:: AnyScriptDoc\n' , filedata, flags=re.MULTILINE)
-    filedata = re.sub('^.?</ANYSCRIPT>.?$', '' , filedata, flags=re.MULTILINE)
-    filedata = re.sub("(`.+[\n]?.+<Downloads/.+>`)(\_\_)", ":download:\g<1>", filedata)
-    filedata = re.sub("(`.+[\n]?.+<.+.)(\.docx)(>`)(\_\_)", ":doc:\g<1>\g<3>", filedata)
+    filedata = re.sub(r'^\s*<ANYSCRIPT>.?$', '\n.. code-block:: AnyScriptDoc\n' , filedata, flags=re.MULTILINE)
+    filedata = re.sub(r'^.?</ANYSCRIPT>.?$', '' , filedata, flags=re.MULTILINE)
+    filedata = re.sub(r"(`.+[\n]?.+<Downloads/.+>`)(\_\_)", r":download:\g<1>", filedata)
+    filedata = re.sub(r"(`.+[\n]?.+<.+.)(\.docx)(>`)(\_\_)", r":doc:\g<1>\g<3>", filedata)
     with open(rstfile, 'w', encoding='utf-8') as file:
         file.write(filedata)
     print('Converted to rst: ' + ns.file)
@@ -366,11 +387,11 @@ def _any_parse(args, name = None, stdin=None):
     val = numpy.array(val)
     basename = name
     cnt = 1
-    while name in __xonsh_ctx__:
+    while name in __xonsh__.ctx:
         name = f'{basename}_{str(cnt)}'
         cnt += 1
     print(f'Added {name} {str(val.shape)} to workspace')
-    __xonsh_ctx__[name] = val
+    __xonsh__.ctx[name] = val
 
 #aliases['any'] = locals().pop('_anyscript_import')
 aliases['any'] = _any_parse
@@ -384,3 +405,55 @@ aliases['any'] = _any_parse
 # TODO: Setup on a new computer.
 #
 aliases['dot']='git --git-dir=~/.dotfiles/ --work-tree=~'
+
+
+$XONSH_STDERR_PREFIX = "{BACKGROUND_RED}"
+
+$XONSH_STDERR_POSTFIX = "{NO_COLOR}"
+
+
+
+
+
+
+###############  pwned check #####################
+
+
+
+def lookup_pwned_api(pword):
+    """Returns hash and number of times password was seen in pwned database.
+    Args:
+        pwd: password to check
+    Returns:
+        A (sha1, count) tuple
+    """
+    import hashlib 
+    import requests
+    sha1pwd = hashlib.sha1(pword.encode('utf-8')).hexdigest().upper()
+    head, tail = sha1pwd[:5], sha1pwd[5:]
+    url = 'https://api.pwnedpasswords.com/range/' + head
+    res = requests.get(url)
+    if res.status_code != 200:
+        raise RuntimeError('Error fetching "{}": {}'.format(
+            url, res.status_code))
+    hashes = (line.split(':') for line in res.text.splitlines())
+    count = next((int(count) for t, count in hashes if t == tail), 0)
+    return sha1pwd, count
+
+
+
+def _pwned(args, stdin=None):
+    desc = "Search pwned database"
+    from prompt_toolkit import prompt
+    pwd = prompt('Enter passowrd: ', is_password=True)
+
+    sha1, count = lookup_pwned_api(pwd)
+    if count: 
+        print(f"Password was found  {count} times (hash: {sha1})")
+    else:
+        print(f"Password wasn't found")
+
+
+aliases['pwned'] = locals().pop('_pwned')
+
+
