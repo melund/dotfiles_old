@@ -1,1 +1,8 @@
 // Empty
+[
+    {
+        "key": "ctrl+shift+f10",
+        "command": "editor.debug.action.runToCursor",
+        "when": "debugState == 'stopped'"
+    }
+]

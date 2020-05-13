@@ -12,8 +12,18 @@
 	helper = manager
 [core]
 	pager = less -R
-	editor = code --wait
+	editor = \"C:\\Users\\mel\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe\" --wait
+	excludesfile = C:\\Users\\mel\\.gitignore_global
 [diff]
     tool = default-difftool
 [difftool "default-difftool"]
     cmd = code --wait --diff $LOCAL $REMOTE
+[credential "https://github.com"]
+	helper = manager
+	username = melund
+[credential "https://gitlab.com"]
+	helper = manager
+	username = melund
+[credential "http://stash.anybodytech.com"]
+	helper = manager
+	username = mel

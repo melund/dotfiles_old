@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # -*-mode: python; flycheck-mode: nil -*-
 
 import warnings
@@ -10,21 +11,40 @@ import argparse
 import os
 from os.path import basename
 
+$THREAD_SUBPROCS = True
+
+
+aliases["gitlab-runner"]=r"~\Gitlab-Runner\gitlab-runner.exe" 
+
+
+if "WT_SESSION" in ${...} or ${...}.get("TERM_PROGRAM") =="vscode":
+    $INTENSIFY_COLORS_ON_WIN = False
+
+
+if "WT_SESSION" in ${...}:
+    $PROMPT_FIELDS['prompt_end'] = "🐌"
+    #$PROMPT_FIELDS['prompt_end'] = '🐌 💖 '
+    if $PWD == r"C:\WINDOWS\system32":
+        ![cd ~]
+
 
 ############
 # SETTINGS #
 ############
 
 
-#$PATH.append(r'C:\Program Files\AnyBody Technology\AnyBody.6.1_Beta')
+#$PATH.append(r'C:\Program Files\AnyBody Technology\AnyBody.7.2')
 $LS_COLORS='rs=0:di=01;36:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:'
 
 
 #xontrib load free_cwd
 #xontrib load mpl
-xontrib load coreutils
+xontrib load coreutils free_cwd
 
 
+$READABLE_TRACE_STRIP_PATH_ENV=True
+$READABLE_TRACE_REVERSE=True
+# $XONSH_SHOW_TRACEBACK = True
 $SUPPRESS_BRANCH_TIMEOUT_MESSAGE = True
 #$WIN_UNICODE_CONSOLE = True
 #$UPDATE_COMPLETIONS_ON_KEYPRES = True
@@ -50,7 +70,7 @@ $XONSH_HISTORY_BACKEND = 'sqlite'
 # aliases['cdpwd'] = 'cd `pwd`'
 aliases['d'] = ['cmd', '/c', 'dir']
 #aliases['npp'] = ['C:/Program Files (x86)/Notepad++/notepad++.exe',  '-multiInst','-nosession']
-aliases['ls'] = ['ls.exe','--show-control-chars', '-C', '--color=auto', '-X']
+#['ls'] = ['ls.exe','--show-control-chars', '-C', '--color=auto', '-X']
 
 
 aliases['ll'] = ['ls', '-lh', '-F', '--color=auto', '-vX']
@@ -146,6 +166,7 @@ def show_style(stylename='default'):
     $XONSH_COLOR_STYLE  = oldstyle
 
 def _sha(args, stdin=None):
+    """ Calculate hash of file """
     parser = argparse.ArgumentParser('sha', description="Calc hash sum of file")
     parser.add_argument('file', nargs='?', help='File to be hashed')
     parser.add_argument('-a', '--algorithm', default='sha256', help='The hash algorithm used')
@@ -162,8 +183,8 @@ def _sha(args, stdin=None):
     $(echo.exe -n @(val.strip()) | clip)
     print(f'{val} *{ns.file} ({ns.algorithm})')
 
-aliases['sha'] = locals().pop('_sha')
-
+aliases['sha'] = _sha
+del _sha
 
 
 def _devmode(args, stdin=None):
@@ -173,21 +194,21 @@ def _devmode(args, stdin=None):
                 $_ORG_PROMPT,$_ORG_TITLE,$_ORG_RIGHT_PROMPT)
             clear
             $XONSH_SHOW_TRACEBACK = True
-            #$INTENSIFY_COLORS_ON_WIN = False
         except:
           pass
     else:
         $_ORG_PROMPT,$_ORG_TITLE,$_ORG_RIGHT_PROMPT = (
              $PROMPT, $TITLE, $RIGHT_PROMPT)
-        $PROMPT = ('{env_name:{}}{BOLD_GREEN}snail@sea'
-                   '{BOLD_BLUE} {cwd}{branch_color}{curr_branch: {}} '
+        
+        distro_name =  ${...}.get('WSL_DISTRO_NAME', 'sea')
+
+        $PROMPT = ('{env_name:{}}{BOLD_GREEN}snail@' + f'{distro_name}' +
+                   '{BOLD_BLUE} {cwd}{branch_color}{curr_branch: {}} ' +
                    '{BOLD_BLUE}\n{prompt_end}{NO_COLOR} ')
-        $TITLE = '{current_job:{} | }snail@sea: {cwd} | xonsh'
+        $TITLE = ('{current_job:{} | }snail@' + f'{distro_name}:' +
+                  '{cwd} | xonsh')
         $RIGHT_PROMPT = ''
         $XONSH_SHOW_TRACEBACK = False
-        #$INTENSIFY_COLORS_ON_WIN = False
-        #$DYNAMIC_CWD_WIDTH = inf
-        #cls
 
 aliases['devmode'] = _devmode
 del _devmode
@@ -195,7 +216,8 @@ del _devmode
 devmode on
 
 
-#$PROMPT_FIELDS['prompt_end'] = lambda : '{BOLD_RED}$' if __xonsh_history__.last_cmd_rtn else '{BOLD_BLUE}$'
+
+
 
 
 #####################
@@ -261,19 +283,6 @@ def _pytho2anyscript(args, stdin=None):
 aliases['py2any'] = _pytho2anyscript
 del _pytho2anyscript
 
-
-
-def _light_theme():
-    cmd /c color f8
-
-aliases['lt'] = _light_theme
-del _light_theme
-
-def _dark_theme():
-    cmd /c color 07
-
-aliases['dt'] = _dark_theme
-del _dark_theme
 
 
 def _docx2rst(args, stdin=None):
@@ -408,11 +417,12 @@ aliases['any'] = _any_parse
 # git --git-dir=~/.dotfiles/ --work-tree=~ config reset --hard origin/master
 
 aliases['dot']='git --git-dir=~/.dotfiles/ --work-tree=~'
+__xonsh__.commands_cache.threadable_predictors['dot'] = lambda x: False
 
 
-$XONSH_STDERR_PREFIX = "{BACKGROUND_RED}"
+#$XONSH_STDERR_PREFIX = "{BACKGROUND_RED}"
 
-$XONSH_STDERR_POSTFIX = "{NO_COLOR}"
+#$XONSH_STDERR_POSTFIX = "{NO_COLOR}"
 
 
 
